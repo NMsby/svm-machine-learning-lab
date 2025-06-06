@@ -486,7 +486,7 @@ if __name__ == "__main__":
     y_test = y_test[shuffle_idx]
 
     print(f"Generated test data: {X_test.shape[0]} samples, {X_test.shape[1]} features")
-    print(f"Class distribution: {np.bincount(y_test + 1)}")
+    print(f"Class distribution: {np.bincount((y_test + 1).astype(int))}")
 
     # Test SVM
     print("\nTesting SVM training...")
