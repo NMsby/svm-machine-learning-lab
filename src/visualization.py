@@ -7,6 +7,7 @@ decision boundary plotting, and SVM analysis visualizations.
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 from typing import Optional, Tuple, Union, List
 import warnings
@@ -463,6 +464,305 @@ def plot_multiple_kernels_comparison(
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         print(f"Kernel comparison plot saved to: {save_path}")
+
+    return fig
+
+
+def plot_hyperparameter_analysis(
+        results_df: pd.DataFrame,
+        param_name: str,
+        metric: str = 'val_accuracy',
+        figsize: Tuple[int, int] = (12, 8),
+        save_path: Optional[str] = None
+) -> plt.Figure:
+    """
+    Plot hyperparameter analysis results.
+
+    Parameters:
+    -----------
+    results_df : pd.DataFrame
+        Results from hyperparameter grid search
+    param_name : str
+        Parameter name to analyze
+    metric : str, default='val_accuracy'
+        Metric to plot
+    figsize : tuple, default=(12, 8)
+        Figure size
+    save_path : str or None, default=None
+        Path to save the plot
+
+    Returns:
+    --------
+    fig : matplotlib.figure.Figure
+        The figure object
+    """
+
+    fig, axes = plt.subplots(1, 2, figsize=figsize)
+
+    # Group by parameter value
+    grouped = results_df.groupby(param_name)[metric]
+
+    # Box plot
+    param_values = []
+    metric_values = []
+    for param_val, group in grouped:
+        param_values.extend([param_val] * len(group))
+        metric_values.extend(group.values)
+
+    axes[0].boxplot([grouped.get_group(val).values for val in sorted(grouped.groups.keys())],
+                    labels=sorted(grouped.groups.keys()))
+    axes[0].set_xlabel(param_name)
+    axes[0].set_ylabel(metric.replace('_', ' ').title())
+    axes[0].set_title(f'{metric.replace("_", " ").title()} vs {param_name}')
+    axes[0].grid(True, alpha=0.3)
+
+    # Line plot with error bars
+    param_means = grouped.mean()
+    param_stds = grouped.std()
+
+    axes[1].errorbar(param_means.index, param_means.values, yerr=param_stds.values,
+                     marker='o', capsize=5, capthick=2, linewidth=2)
+    axes[1].set_xlabel(param_name)
+    axes[1].set_ylabel(metric.replace('_', ' ').title())
+    axes[1].set_title(f'Mean {metric.replace("_", " ").title()} vs {param_name}')
+    axes[1].grid(True, alpha=0.3)
+
+    plt.tight_layout()
+
+    if save_path:
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"Hyperparameter analysis plot saved to: {save_path}")
+
+    return fig
+
+
+def plot_learning_curve(
+        learning_curve_data: dict,
+        title: str = "Learning Curve",
+        figsize: Tuple[int, int] = (12, 8),
+        save_path: Optional[str] = None
+) -> plt.Figure:
+    """
+    Plot learning curve showing training and validation performance vs dataset size.
+
+    Parameters:
+    -----------
+    learning_curve_data : dict
+        Data from analyze_learning_curve function
+    title : str, default="Learning Curve"
+        Plot title
+    figsize : tuple, default=(12, 8)
+        Figure size
+    save_path : str or None, default=None
+        Path to save the plot
+
+    Returns:
+    --------
+    fig : matplotlib.figure.Figure
+        The figure object
+    """
+
+    fig, axes = plt.subplots(1, 2, figsize=figsize)
+
+    train_sizes = learning_curve_data['n_samples_used']
+    train_scores = learning_curve_data['train_scores']
+    val_scores = learning_curve_data['val_scores']
+    train_times = learning_curve_data['train_times']
+
+    # Learning curve plot
+    axes[0].plot(train_sizes, train_scores, 'o-', color=COLORS['class_1'],
+                 linewidth=2, markersize=6, label='Training Score')
+    axes[0].plot(train_sizes, val_scores, 'o-', color=COLORS['class_neg1'],
+                 linewidth=2, markersize=6, label='Validation Score')
+
+    axes[0].set_xlabel('Training Set Size')
+    axes[0].set_ylabel('Accuracy Score')
+    axes[0].set_title(f'{title} - Performance vs Dataset Size')
+    axes[0].legend()
+    axes[0].grid(True, alpha=0.3)
+    axes[0].set_ylim(0, 1.05)
+
+    # Training time plot
+    axes[1].plot(train_sizes, train_times, 'o-', color=COLORS['support_vectors'],
+                 linewidth=2, markersize=6)
+    axes[1].set_xlabel('Training Set Size')
+    axes[1].set_ylabel('Training Time (seconds)')
+    axes[1].set_title(f'{title} - Training Time vs Dataset Size')
+    axes[1].grid(True, alpha=0.3)
+
+    plt.tight_layout()
+
+    if save_path:
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"Learning curve plot saved to: {save_path}")
+
+    return fig
+
+
+def plot_cross_validation_results(
+        cv_results: dict,
+        title: str = "Cross-Validation Results",
+        figsize: Tuple[int, int] = (14, 6),
+        save_path: Optional[str] = None
+) -> plt.Figure:
+    """
+    Plot cross-validation results with detailed metrics.
+
+    Parameters:
+    -----------
+    cv_results : dict
+        Results from cross_validate_model function
+    title : str, default="Cross-Validation Results"
+        Plot title
+    figsize : tuple, default=(14, 6)
+        Figure size
+    save_path : str or None, default=None
+        Path to save the plot
+
+    Returns:
+    --------
+    fig : matplotlib.figure.Figure
+        The figure object
+    """
+
+    fig, axes = plt.subplots(1, 3, figsize=figsize)
+
+    # Metrics to plot
+    metrics = ['accuracy', 'precision', 'recall', 'f1_score']
+    metric_names = ['Accuracy', 'Precision', 'Recall', 'F1 Score']
+
+    # Box plot of all metrics
+    metric_values = []
+    for metric in metrics:
+        metric_values.append(cv_results[f'{metric}_values'])
+
+    box_plot = axes[0].boxplot(metric_values, labels=metric_names, patch_artist=True)
+
+    # Color the boxes
+    colors = [COLORS['class_1'], COLORS['class_neg1'], COLORS['support_vectors'], COLORS['decision_boundary']]
+    for patch, color in zip(box_plot['boxes'], colors):
+        patch.set_facecolor(color)
+        patch.set_alpha(0.7)
+
+    axes[0].set_ylabel('Score')
+    axes[0].set_title('Cross-Validation Metrics Distribution')
+    axes[0].grid(True, alpha=0.3)
+    axes[0].set_ylim(0, 1.05)
+
+    # Fold-by-fold performance
+    fold_numbers = range(1, len(cv_results['accuracy_values']) + 1)
+    axes[1].plot(fold_numbers, cv_results['accuracy_values'], 'o-',
+                 color=COLORS['class_1'], linewidth=2, markersize=8, label='Accuracy')
+    axes[1].plot(fold_numbers, cv_results['f1_score_values'], 'o-',
+                 color=COLORS['class_neg1'], linewidth=2, markersize=8, label='F1 Score')
+
+    axes[1].set_xlabel('Fold Number')
+    axes[1].set_ylabel('Score')
+    axes[1].set_title('Performance Across Folds')
+    axes[1].legend()
+    axes[1].grid(True, alpha=0.3)
+    axes[1].set_ylim(0, 1.05)
+
+    # Mean ± std visualization
+    metrics_means = [cv_results[f'{metric}_mean'] for metric in metrics]
+    metrics_stds = [cv_results[f'{metric}_std'] for metric in metrics]
+
+    x_pos = np.arange(len(metrics))
+    bars = axes[2].bar(x_pos, metrics_means, yerr=metrics_stds, capsize=5,
+                       color=colors, alpha=0.7, edgecolor='black', linewidth=1)
+
+    axes[2].set_xticks(x_pos)
+    axes[2].set_xticklabels(metric_names)
+    axes[2].set_ylabel('Score')
+    axes[2].set_title('Mean Performance ± Standard Deviation')
+    axes[2].grid(True, alpha=0.3, axis='y')
+    axes[2].set_ylim(0, 1.05)
+
+    # Add value labels on bars
+    for bar, mean_val, std_val in zip(bars, metrics_means, metrics_stds):
+        height = bar.get_height()
+        axes[2].text(bar.get_x() + bar.get_width() / 2., height + std_val + 0.02,
+                     f'{mean_val:.3f}±{std_val:.3f}', ha='center', va='bottom', fontsize=9)
+
+    plt.tight_layout()
+
+    if save_path:
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"Cross-validation results plot saved to: {save_path}")
+
+    return fig
+
+
+def plot_confusion_matrix_comparison(
+        models_data: List[Tuple[str, np.ndarray, np.ndarray]],
+        figsize: Tuple[int, int] = (15, 5),
+        save_path: Optional[str] = None
+) -> plt.Figure:
+    """
+    Plot confusion matrices for multiple models side by side.
+
+    Parameters:
+    -----------
+    models_data : list of tuples
+        List of (model_name, y_true, y_pred) tuples
+    figsize : tuple, default=(15, 5)
+        Figure size
+    save_path : str or None, default=None
+        Path to save the plot
+
+    Returns:
+    --------
+    fig : matplotlib.figure.Figure
+        The figure object
+    """
+
+    n_models = len(models_data)
+    fig, axes = plt.subplots(1, n_models, figsize=figsize)
+
+    if n_models == 1:
+        axes = [axes]
+
+    for idx, (model_name, y_true, y_pred) in enumerate(models_data):
+        # Calculate confusion matrix
+        cm = confusion_matrix(y_true, y_pred, labels=[-1, 1])
+
+        # Normalize to percentages
+        cm_normalized = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis] * 100
+
+        # Plot
+        im = axes[idx].imshow(cm_normalized, interpolation='nearest', cmap='Blues')
+        axes[idx].set_title(f'{model_name}\nConfusion Matrix')
+
+        # Add colorbar
+        cbar = plt.colorbar(im, ax=axes[idx], fraction=0.046, pad=0.04)
+        cbar.set_label('Percentage (%)')
+
+        # Add text annotations
+        thresh = cm_normalized.max() / 2.
+        for i in range(cm.shape[0]):
+            for j in range(cm.shape[1]):
+                axes[idx].text(j, i, f'{cm[i, j]}\n({cm_normalized[i, j]:.1f}%)',
+                               ha="center", va="center",
+                               color="white" if cm_normalized[i, j] > thresh else "black",
+                               fontsize=10, fontweight='bold')
+
+        # Set labels
+        axes[idx].set_xlabel('Predicted Label')
+        axes[idx].set_ylabel('True Label')
+        axes[idx].set_xticks([0, 1])
+        axes[idx].set_yticks([0, 1])
+        axes[idx].set_xticklabels(['Class -1', 'Class +1'])
+        axes[idx].set_yticklabels(['Class -1', 'Class +1'])
+
+    plt.tight_layout()
+
+    if save_path:
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"Confusion matrix comparison saved to: {save_path}")
 
     return fig
 
