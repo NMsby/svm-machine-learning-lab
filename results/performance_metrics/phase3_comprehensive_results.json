@@ -1,0 +1,172 @@
+{
+  "best_params": {
+    "learning_rate": 0.001,
+    "lambda_param": 0.001,
+    "n_iters": 500
+  },
+  "best_score": 1.0,
+  "cv_results": {
+    "accuracy_mean": 1.0,
+    "accuracy_std": 0.0,
+    "accuracy_values": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "precision_mean": 1.0,
+    "precision_std": 0.0,
+    "precision_values": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "recall_mean": 1.0,
+    "recall_std": 0.0,
+    "recall_values": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "f1_score_mean": 1.0,
+    "f1_score_std": 0.0,
+    "f1_score_values": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "balanced_accuracy_mean": 1.0,
+    "balanced_accuracy_std": 0.0,
+    "balanced_accuracy_values": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "training_time_mean": 0.052245044708251955,
+    "training_time_std": 0.045877163894257424,
+    "fold_results": [
+      {
+        "model_name": "fold_1",
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "specificity": 1.0,
+        "sensitivity": 1.0,
+        "balanced_accuracy": 1.0,
+        "mcc": 1.0,
+        "true_positives": 8,
+        "true_negatives": 8,
+        "false_positives": 0,
+        "false_negatives": 0,
+        "total_samples": 16,
+        "training_time": 0.04206562042236328
+      },
+      {
+        "model_name": "fold_2",
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "specificity": 1.0,
+        "sensitivity": 1.0,
+        "balanced_accuracy": 1.0,
+        "mcc": 1.0,
+        "true_positives": 8,
+        "true_negatives": 8,
+        "false_positives": 0,
+        "false_negatives": 0,
+        "total_samples": 16,
+        "training_time": 0.10277295112609863
+      },
+      {
+        "model_name": "fold_3",
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "specificity": 1.0,
+        "sensitivity": 1.0,
+        "balanced_accuracy": 1.0,
+        "mcc": 1.0,
+        "true_positives": 8,
+        "true_negatives": 8,
+        "false_positives": 0,
+        "false_negatives": 0,
+        "total_samples": 16,
+        "training_time": 0.1086723804473877
+      },
+      {
+        "model_name": "fold_4",
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "specificity": 1.0,
+        "sensitivity": 1.0,
+        "balanced_accuracy": 1.0,
+        "mcc": 1.0,
+        "true_positives": 8,
+        "true_negatives": 8,
+        "false_positives": 0,
+        "false_negatives": 0,
+        "total_samples": 16,
+        "training_time": 0.004026174545288086
+      },
+      {
+        "model_name": "fold_5",
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "specificity": 1.0,
+        "sensitivity": 1.0,
+        "balanced_accuracy": 1.0,
+        "mcc": 1.0,
+        "true_positives": 8,
+        "true_negatives": 8,
+        "false_positives": 0,
+        "false_negatives": 0,
+        "total_samples": 16,
+        "training_time": 0.0036880970001220703
+      }
+    ]
+  },
+  "test_accuracy": 1.0,
+  "timing_results": {
+    "mean_time": 0.03486909866333008,
+    "std_time": 0.004372731198414027,
+    "min_time": 0.030556440353393555,
+    "max_time": 0.04205465316772461,
+    "mean_accuracy": 1.0,
+    "std_accuracy": 0.0,
+    "all_times": [
+      0.04205465316772461,
+      0.03298640251159668,
+      0.030556440353393555,
+      0.031107664108276367,
+      0.03764033317565918
+    ],
+    "all_accuracies": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "parameter_sensitivity": {
+    "learning_rate": 0.0,
+    "lambda_param": 0.0,
+    "n_iters": 0.0
+  }
+}
